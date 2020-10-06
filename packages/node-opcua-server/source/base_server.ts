@@ -326,11 +326,12 @@ export class OPCUABaseServer extends OPCUASecureObject {
         }
     }
 
-    public _get_endpoints(): EndpointDescription[] {
+    public _get_endpoints(endpointUrl: string | null): EndpointDescription[] {
         let endpoints: EndpointDescription[] = [];
         for (const endPoint of this.endpoints) {
             const ep = endPoint.endpointDescriptions();
-            endpoints = endpoints.concat(ep);
+            const epFiltered = endpointUrl ? ep.filter((e) => e.endpointUrl === endpointUrl) : ep;
+            endpoints = endpoints.concat(epFiltered);
         }
         return endpoints;
     }
@@ -414,7 +415,7 @@ export class OPCUABaseServer extends OPCUASecureObject {
 
         const response = new GetEndpointsResponse({});
 
-        response.endpoints = server._get_endpoints();
+        response.endpoints = server._get_endpoints(null);
 
         response.endpoints = response.endpoints.filter((endpoint: EndpointDescription) => !(endpoint as any).restricted);
 
